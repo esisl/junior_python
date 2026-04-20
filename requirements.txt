@@ -1,0 +1,6 @@
+# django-test/requirements.txt
+Django>=4.2,<5.0
+djangorestframework>=3.14
+psycopg2-binary>=2.9
+gunicorn>=21.0
+python-decouple>=3.8  # для выноса настроек в .env (опционально, но рекомендую)

@@ -1,0 +1,37 @@
+# django-test/docker-compose.yml
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-test_db}
+      POSTGRES_USER: ${DB_USER:-test_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-change_me_in_prod}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-test_user}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    restart: unless-stopped
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2 --threads 2
+    ports:
+      - "127.0.0.1:8001:8000"  # <-- Порт 8001, привязка только к localhost
+    environment:
+      DATABASE_URL: postgres://${DB_USER:-test_user}:${DB_PASSWORD:-change_me_in_prod}@db:5432/${DB_NAME:-test_db}
+      DEBUG: ${DEBUG:-False}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./src:/app  # Для разработки: горячая перезагрузка кода (опционально)
+
+volumes:
+  pg_data:
