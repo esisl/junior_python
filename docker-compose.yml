@@ -17,6 +17,7 @@ services:
   web:
     build: .
     restart: unless-stopped
+    user: "${USER_ID:-1000}:${GROUP_ID:-1000}"
     command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2
     ports:
       - "127.0.0.1:8002:8000"
@@ -32,4 +33,4 @@ services:
       - ./src:/app
 
 volumes:
-  pg_data:  # <-- Двоеточие обязательно, даже если значение пустое
+  pg_data:
