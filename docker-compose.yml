@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - pg_/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
       interval: 5s
@@ -32,4 +32,4 @@ services:
       - ./src:/app:ro
 
 volumes:
-  pg_
+  pg_data:  # <-- Двоеточие обязательно, даже если значение пустое
