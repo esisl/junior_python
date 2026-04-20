@@ -29,7 +29,7 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - ./src:/app:ro
+      - ./src:/app
 
 volumes:
   pg_data:  # <-- Двоеточие обязательно, даже если значение пустое
