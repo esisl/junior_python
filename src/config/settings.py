@@ -85,7 +85,7 @@ DATABASES = {
         'NAME': decouple_config('DB_NAME'),
         'USER': decouple_config('DB_USER'),
         'PASSWORD': decouple_config('DB_PASSWORD'),
-        'HOST': 'db',  # Имя сервиса из docker-compose
+        'HOST': 'db',
         'PORT': '5432',
     }
 }
