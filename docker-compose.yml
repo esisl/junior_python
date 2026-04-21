@@ -22,6 +22,7 @@ services:
     ports:
       - "127.0.0.1:8002:8000"
     environment:
+      DJANGO_SETTINGS_MODULE: config.settings
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
