@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from drf_spectacular.utils import extend_schema, OpenApiParameter
+from rest_framework.permissions import IsAuthenticated
 from apps.accounts.permissions import IsAllowedAction
 
 MOCK_ARTICLES = [
@@ -10,7 +11,7 @@ MOCK_ARTICLES = [
 ]
 
 class ArticleListView(APIView):
-    permission_classes = [IsAllowedAction]
+    permission_classes = [IsAllowedAction, IsAllowedAction]
     resource = "article"
     action = "read"  # Исправлено: "list" -> "read"
 
@@ -19,7 +20,7 @@ class ArticleListView(APIView):
         return Response(MOCK_ARTICLES, status=200)
 
 class ArticleDetailView(APIView):
-    permission_classes = [IsAllowedAction]
+    permission_classes = [IsAllowedAction, IsAllowedAction]
     resource = "article"
     action = "read"
 
@@ -34,7 +35,7 @@ class ArticleDetailView(APIView):
         return Response(article, status=200)
 
 class ArticleCreateView(APIView):
-    permission_classes = [IsAllowedAction]
+    permission_classes = [IsAllowedAction, IsAllowedAction]
     resource = "article"
     action = "create"
 
@@ -47,7 +48,7 @@ class ArticleCreateView(APIView):
         return Response(new_article, status=201)
 
 class ReportListView(APIView):
-    permission_classes = [IsAllowedAction]
+    permission_classes = [IsAllowedAction, IsAllowedAction]
     resource = "report"
     action = "read"
 
