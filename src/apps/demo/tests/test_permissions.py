@@ -1,8 +1,12 @@
 import pytest
-import json
 from django.urls import reverse
+from rest_framework.test import APIClient
 from apps.accounts.models import User, Role, Token
 from apps.rbac.models import PermissionRule
+
+@pytest.fixture
+def api_client():
+    return APIClient()
 
 @pytest.mark.django_db
 class TestArticlePermissions:
@@ -19,37 +23,25 @@ class TestArticlePermissions:
         PermissionRule.objects.create(role=self.role_user, resource='article', action='read', allowed=True)
         PermissionRule.objects.create(role=self.role_admin, resource='article', action='create', allowed=True)
 
-    def _auth_header(self, token_key):
-        return {'HTTP_AUTHORIZATION': f'Token {token_key}'}
-
-    def test_user_can_read_articles(self, client):
-        response = client.get(reverse('article-list'), **self._auth_header(self.user_token.key))
+    def test_user_can_read_articles(self, api_client):
+        api_client.credentials(HTTP_AUTHORIZATION=f'Token {self.user_token.key}')
+        response = api_client.get(reverse('article-list'))
         assert response.status_code == 200
-        data = json.loads(response.content)
-        assert len(data) > 0
+        assert len(response.data) > 0
 
-    def test_user_cannot_create_articles(self, client):
-        response = client.post(
-            reverse('article-create'), 
-            json.dumps({'title': 'Hack'}), 
-            content_type='application/json',
-            **self._auth_header(self.user_token.key)
-        )
+    def test_user_cannot_create_articles(self, api_client):
+        api_client.credentials(HTTP_AUTHORIZATION=f'Token {self.user_token.key}')
+        response = api_client.post(reverse('article-create'), {'title': 'Hack'})
         assert response.status_code == 403
 
-    def test_admin_can_create_articles(self, client):
-        response = client.post(
-            reverse('article-create'), 
-            json.dumps({'title': 'Admin Post'}), 
-            content_type='application/json',
-            **self._auth_header(self.admin_token.key)
-        )
+    def test_admin_can_create_articles(self, api_client):
+        api_client.credentials(HTTP_AUTHORIZATION=f'Token {self.admin_token.key}')
+        response = api_client.post(reverse('article-create'), {'title': 'Admin Post'})
         assert response.status_code == 201
-        data = json.loads(response.content)
-        assert data['title'] == 'Admin Post'
+        assert response.data['title'] == 'Admin Post'
 
-    def test_unauthenticated_user_gets_401(self, client):
-        response = client.get(reverse('article-list'))
+    def test_unauthenticated_user_gets_401(self, api_client):
+        response = api_client.get(reverse('article-list'))
         assert response.status_code == 401
 
 @pytest.mark.django_db
@@ -60,9 +52,7 @@ class TestReportPermissions:
         self.token = Token.create_for_user(self.user)
         PermissionRule.objects.create(role=self.role_user, resource='report', action='read', allowed=False)
 
-    def _auth_header(self, token_key):
-        return {'HTTP_AUTHORIZATION': f'Token {token_key}'}
-
-    def test_explicit_deny_works(self, client):
-        response = client.get(reverse('report-list'), **self._auth_header(self.token.key))
+    def test_explicit_deny_works(self, api_client):
+        api_client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        response = api_client.get(reverse('report-list'))
         assert response.status_code == 403
