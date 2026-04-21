@@ -137,7 +137,7 @@ AUTH_USER_MODEL = 'accounts.User'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [],  # Пока пусто, подключим на итерации 3
     'DEFAULT_PERMISSION_CLASSES': [],
-    'EXCEPTION_HANDLER': 'config.exceptions.custom_exception_handler',
+    #'EXCEPTION_HANDLER': 'config.exceptions.custom_exception_handler',
 }
 
 SPECTACULAR_SETTINGS = {
