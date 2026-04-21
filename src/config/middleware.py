@@ -8,20 +8,15 @@ class TokenAuthMiddleware:
 
     def __call__(self, request):
         auth_header = request.META.get('HTTP_AUTHORIZATION', '')
-        user = AnonymousUser()
-        auth_token = None
-
+        
         if auth_header.startswith('Token '):
             token_key = auth_header.split(' ', 1)[1].strip()
-            try:
-                token_obj = authenticate_token(token_key)
-                if token_obj:
-                    user = token_obj.user
-                    auth_token = token_obj
-            except Exception:
-                # В production лучше логировать, но для теста просто игнорируем
-                pass
+            token_obj = authenticate_token(token_key)
+            if token_obj:
+                request.user = token_obj.user
+                request.auth = token_obj
+                return self.get_response(request)
 
-        request.user = user
-        request.auth = auth_token
+        request.user = AnonymousUser()
+        request.auth = None
         return self.get_response(request)
