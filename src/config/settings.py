@@ -53,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'config.middleware.TokenAuthMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -136,8 +137,10 @@ AUTH_USER_MODEL = 'accounts.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [],  # Пока пусто, подключим на итерации 3
-    'DEFAULT_PERMISSION_CLASSES': [],
-    #'EXCEPTION_HANDLER': 'config.exceptions.custom_exception_handler',
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'EXCEPTION_HANDLER': 'config.exceptions.custom_exception_handler',
 }
 
 SPECTACULAR_SETTINGS = {
