@@ -1,31 +1,38 @@
 # src/apps/rbac/services.py
+import logging
 from apps.rbac.models import PermissionRule
-from apps.accounts.models import User
 
-def check_permission(user: User, resource: str, action: str) -> bool:
-    """
-    Проверяет, имеет ли пользователь право выполнять действие над ресурсом.
-    Логика:
-    1. is_admin -> всегда разрешено
-    2. is_active=False -> всегда запрещено
-    3. Нет роли -> запрещено
-    4. Ищем правило для роли+ресурс+действие. Если найдено -> возвращаем allowed.
-    5. Правило не найдено -> запрещено (secure by default).
-    """
-    if not user or not user.is_active:
+logger = logging.getLogger(__name__)
+
+def check_permission(user, resource: str, action: str) -> bool:
+    # 1. Базовые проверки
+    if not user or not hasattr(user, 'is_active') or not user.is_active:
+        logger.warning(f"Permission DENIED: User {user} is inactive or invalid")
         return False
     
-    if user.is_admin:
+    # 2. Суперпользователь
+    if getattr(user, 'is_admin', False):
+        logger.info(f"Permission ALLOWED: User {user} is admin")
         return True
     
-    if not user.role:
+    # 3. Проверка роли
+    user_role = getattr(user, 'role', None)
+    if not user_role:
+        logger.warning(f"Permission DENIED: User {user} has no role")
         return False
     
-    # Ищем правило. При 1 роли на пользователя достаточно первого совпадения.
+    # 4. Поиск правила (с логированием запроса)
+    logger.info(f"Checking rule: role={user_role.name}, res={resource}, act={action}")
+    
     rule = PermissionRule.objects.filter(
-        role=user.role,
+        role=user_role,
         resource=resource,
         action=action
     ).first()
     
-    return rule.allowed if rule else False
+    if rule:
+        logger.info(f"Rule found: allowed={rule.allowed}")
+        return rule.allowed
+    else:
+        logger.warning(f"Rule NOT FOUND: {user_role.name} -> {action} {resource}")
+        return False  # Secure by default
