@@ -30,14 +30,14 @@ class LoginView(APIView):
         return Response(result, status=200)
 
 class LogoutView(APIView):
-    permission_classes = [IsAuthenticated, IsAllowedAction]
+    permission_classes = [IsAllowedAction]
     def post(self, request):
         # Токен берём из заголовка, который установил middleware
         logout_user(request.auth.key)
         return Response(status=204)
 
 class ProfileView(APIView):
-    permission_classes = [IsAuthenticated, IsAllowedAction]
+    permission_classes = [IsAllowedAction]
     
     def get(self, request):
         serializer = ProfileUpdateSerializer(request.user)
