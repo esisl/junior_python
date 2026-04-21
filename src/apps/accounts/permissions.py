@@ -5,10 +5,15 @@ from apps.rbac.services import check_permission
 
 class IsAllowedAction(permissions.BasePermission):
     """
-    Проверяет только бизнес-права (RBAC).
-    Аутентификация обрабатывается отдельно через IsAuthenticated.
+    Проверяет только бизнес-права (RBAC) для УЖЕ аутентифицированных пользователей.
+    Если пользователь не аутентифицирован — пропускаем проверку, 
+    пусть за возврат 401 отвечает IsAuthenticated.
     """
     def has_permission(self, request, view):
+        # Ключевая правка: если пользователь не аутентифицирован — возвращаем True
+        if not request.user or not request.user.is_authenticated:
+            return True
+        
         resource = getattr(view, 'resource', None)
         action = getattr(view, 'action', None)
         
