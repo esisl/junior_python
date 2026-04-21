@@ -7,7 +7,6 @@ from drf_spectacular.utils import extend_schema
 from apps.accounts.serializers import RegisterSerializer, LoginSerializer, ProfileUpdateSerializer
 from apps.accounts.services import register_user, authenticate_user, logout_user, soft_delete_user
 from utils.tokens import authenticate_token
-from config.middleware import get_user_from_request  # см. ниже
 
 class RegisterView(APIView):
     @extend_schema(request=RegisterSerializer, responses={201: {"token": "string", "user_id": "int"}})
