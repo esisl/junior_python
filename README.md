@@ -43,43 +43,43 @@ Swagger UI: /api/docs/
 
 
 | Требование ТЗ | Как реализуем |
-| Кастомная аутентификация | Свои эндпоинты /api/auth/login/, /api/auth/register/ с ручной валидацией, хешированием через make\_password\(\), выдачей токена |
-| Кастомная авторизация | Таблицы Role, Resource, Action, PermissionRule \+ middleware для проверки |
-| Мягкое удаление | Поле is\_active \+ переопределение delete\(\) \+ кастомный UserManager |
+| Кастомная аутентификация | Свои эндпоинты /api/auth/login/, /api/auth/register/ с ручной валидацией, хешированием через make_password(), выдачей токена |
+| Кастомная авторизация | Таблицы Role, Resource, Action, PermissionRule + middleware для проверки |
+| Мягкое удаление | Поле is_active + переопределение delete() + кастомный UserManager |
 | Демонстрация правил | Админские эндпоинты /api/admin/permissions/ для CRUD правил |
 
 | User | |
-| Id \(PK\) | |
-| Email \(PK\) | |
-| password\_hash | |
-| first\_name | |
-| last\_name | |
+| Id (PK) | |
+| Email (PK) | |
+| password_hash | |
+| first_name | |
+| last_name | |
 | patronymic | |
-| role\_id \(FK\) | |
-| is\_active \(bool\) | мягкое удаление |
-| is\_admin \(bool\) | флаг для упрощения |
-| created\_at | |
-| updated\_at | |
-| deleted\_at | для аудита |
+| role_id (FK) | |
+| is_active (bool) | мягкое удаление |
+| is_admin (bool) | флаг для упрощения |
+| created_at | |
+| updated_at | |
+| deleted_at | для аудита |
 
-1:1 через role\_id 
+1:1 через role_id 
 
 | Role | |
-| id \(PK\) | |
-| name \(UK\) | "admin", "manager", "user" |
+| id (PK) | |
+| name (UK) | "admin", "manager", "user" |
 | description | |
 
 1:N
 
 | PermissionRule | |
-| id \(PK\) | |
-| role\_id \(FK\) | |
-| resource \(str\) | "article", "report", "user\_profile" |
-| action \(str\) | "create", "read", "update", "delete", "list" |
-| allowed \(bool\) | |
+| id (PK) | |
+| role_id (FK) | |
+| resource (str) | "article", "report", "user_profile" |
+| action (str) | "create", "read", "update", "delete", "list" |
+| allowed (bool) | |
 
 | Token | |
-| key \(PK, str\) | |
-| user\_id \(FK\) | User |
-| created\_at | | 
-| is\_revoked \(bool\) | принудительный логаут |
+| key (PK, str) | |
+| user_id (FK) | User |
+| created_at | | 
+| is_revoked (bool) | принудительный логаут |
